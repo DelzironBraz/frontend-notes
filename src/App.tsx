@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Box, Button, Card, CardActions, CardContent, Grid, TextField } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -9,6 +9,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import { TiCancel } from "react-icons/ti";
+import { addNewNote, deleteNote, getAllNotes, updateNotes } from './utils/fetchFromApi';
 
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -20,12 +21,12 @@ const App = () => {
     event.preventDefault();
 
     const newNote: Note = {
-      id: notes.length + 1,
+      _id: notes.length + 1,
       title: title,
       content: content
     };
 
-    setNotes([newNote, ...notes]);
+    addNewNote(newNote);
     setTitle('');
     setContent('');
   };
@@ -42,16 +43,13 @@ const App = () => {
     if (!selectedNote) return;
 
     const updateNote: Note = {
-      id: selectedNote.id,
+      _id: selectedNote._id,
       title: title,
       content: content
     };
 
-    const updateNoteList = notes.map((note) => (
-      note.id === selectedNote.id ? updateNote : note
-    ));
+    updateNotes(updateNote);
 
-    setNotes(updateNoteList);
     setTitle('');
     setContent('');
     setSelectedNote(null);
@@ -66,12 +64,19 @@ const App = () => {
   const handleDeleteNote = (event: React.MouseEvent, noteId: number) => {
     event.stopPropagation();
 
-    const updatedNotes = notes.filter(
-      (note) => note.id !== noteId
-    );
+    deleteNote(String(noteId));
 
-    setNotes(updatedNotes);
   };
+
+  useEffect(() => {
+    getAllNotes()
+      .then((notes) => {
+        setNotes(notes);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+  }, [notes])
 
   return (
     <Box>
@@ -114,7 +119,7 @@ const App = () => {
             {
               notes.length ? (
                 notes.map((note) => (
-                  <Grid item sm={4} md={4}>
+                  <Grid item sm={4} md={4} key={note._id}>
                     <Card sx={{ minWidth: 275 }} onClick={() => handleSelectNote(note)}>
                       <CardContent>
                         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -125,7 +130,7 @@ const App = () => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button variant='outlined' endIcon={<FaTrashAlt />} onClick={(event) => handleDeleteNote(event, note.id)}>Delete</Button>
+                        <Button variant='outlined' endIcon={<FaTrashAlt />} onClick={(event) => handleDeleteNote(event, note._id)}>Delete</Button>
                       </CardActions>
                     </Card>
                   </Grid>
