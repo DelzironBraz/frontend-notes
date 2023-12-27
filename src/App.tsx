@@ -127,7 +127,7 @@ const App = () => {
           </Box>
         </Grid>
         <Grid item sm={8} md={12}>
-          <Grid container spacing={4} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ justifyContent: 'center', alignItems: 'center', paddingX: '1rem' }}>
+          <Grid container spacing={4} columns={{ xs: 4, sm: 8, md: 12 }} sx={{ justifyContent: 'center', alignItems: 'center', paddingRight: '1rem', paddingLeft: '1rem' }}>
             {
               notes.length ? (
                 notes.map((note) => (
@@ -149,8 +149,8 @@ const App = () => {
                 ))
 
               ) : (
-                <Grid item sm={4} md={4}>
-                  <h1>No notes to show</h1>
+                <Grid item sm={12} sx={{ width: '100%', textAlign: 'center' }}>
+                  <Typography variant='h4' >No notes to show</Typography>
                 </Grid>
               )
             }
